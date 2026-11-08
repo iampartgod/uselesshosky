@@ -37,8 +37,8 @@
   button.secondary { background: #334155; }
   button.danger { background: #ef4444; }
   .total {
-    font-family: 'Press Start 2P', monospace; font-size: 1.4rem; color: var(--green);
-    text-align: center; margin: 10px 0 15px;
+    font-family: 'Press Start 2P', monospace; font-size: 1.3rem; color: var(--green);
+    text-align: center; margin: 10px 0 15px; line-height: 1.6;
   }
   table { width: 100%; border-collapse: collapse; margin-top: 10px; }
   th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #1e3a5f; }
@@ -146,9 +146,12 @@ function render() {
   const data = loadData().sort((a, b) => b.epoch - a.epoch);
   const tbody = document.getElementById('tbody');
   tbody.innerHTML = '';
-  let total = 0;
+  let totalHosky = 0;
+  let totalUsd = 0;
+
   data.forEach(entry => {
-    total += Number(entry.amount) || 0;
+    totalHosky += Number(entry.amount) || 0;
+    if (entry.usd) totalUsd += Number(entry.usd);
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${entry.epoch}</td>
@@ -164,7 +167,10 @@ function render() {
       </td>`;
     tbody.appendChild(tr);
   });
-  document.getElementById('total').textContent = total.toLocaleString() + ' $HOSKY';
+
+  const usdText = totalUsd > 0 ? ` (~$${totalUsd.toFixed(2)})` : '';
+  document.getElementById('total').innerHTML = 
+    `${totalHosky.toLocaleString()} $HOSKY${usdText}`;
 }
 
 function addEntry() {
